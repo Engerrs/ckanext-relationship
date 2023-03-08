@@ -6,17 +6,13 @@ import ckanext.relationship.logic.schema as schema
 from ckan.logic import validate
 from ckanext.relationship.model.relationship import Relationship
 from ckanext.relationship.utils import entity_name_by_id
-from ckanext.toolbelt.decorators import Collector
 from sqlalchemy import or_
 
 NotFound = logic.NotFound
 
-action, get_actions = Collector("relationship").split()
 
-
-@action
 @validate(schema.relation_create)
-def relation_create(context, data_dict) -> list[dict[str, str]]:
+def relationship_relation_create(context, data_dict) -> list[dict[str, str]]:
     """Create relation with specified type (relation_type) between two entities specified
     by ids (subject_id, object_id). Also create reverse relation."""
     tk.check_access('relationship_relation_create', context, data_dict)
@@ -47,9 +43,8 @@ def relation_create(context, data_dict) -> list[dict[str, str]]:
     return [rel.as_dict() for rel in (relation, reverse_relation)]
 
 
-@action
 @validate(schema.relation_delete)
-def relation_delete(context, data_dict) -> list[dict[str, str]]:
+def relationship_relation_delete(context, data_dict) -> list[dict[str, str]]:
     """Delete relation with specified type (relation_type) between two entities specified
     by ids (subject_id, object_id). Also delete reverse relation."""
     tk.check_access('relationship_relation_delete', context, data_dict)
@@ -91,9 +86,8 @@ def relation_delete(context, data_dict) -> list[dict[str, str]]:
     return [rel[0].as_dict() for rel in (relation, reverse_relation) if len(rel) > 0]
 
 
-@action
 @validate(schema.relations_list)
-def relations_list(context, data_dict) -> list[dict[str, str]]:
+def relationship_relations_list(context, data_dict) -> list[dict[str, str]]:
     """Return dicts list of relation of specified entity (object_entity, object_type) related with specified
     type of relation (relation_type) with entity specified by id (subject_id)."""
     tk.check_access('relationship_relations_list', context, data_dict)
@@ -113,21 +107,19 @@ def relations_list(context, data_dict) -> list[dict[str, str]]:
     return [rel.as_dict() for rel in relations]
 
 
-@action
 @validate(schema.relations_ids_list)
-def relations_ids_list(context, data_dict) -> list[str]:
+def relationship_relations_ids_list(context, data_dict) -> list[str]:
     """Return ids list of specified entity (object_entity, object_type) related with specified
     type of relation (relation_type) with entity specified by id (subject_id)."""
     tk.check_access('relationship_relations_ids_list', context, data_dict)
 
-    rel_list = relations_list(context, data_dict)
+    rel_list = relationship_relations_list(context, data_dict)
 
     return list(set([rel["object_id"] for rel in rel_list]))
 
 
-@action
 @validate(schema.get_entity_list)
-def get_entity_list(context, data_dict) -> list[str]:
+def relationship_get_entity_list(context, data_dict) -> list[str]:
     """Return ids list of specified entity (entity, entity_type)"""
     tk.check_access('relationship_get_entity_list', context, data_dict)
 

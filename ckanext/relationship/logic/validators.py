@@ -4,15 +4,11 @@ import json
 
 import ckan.plugins.toolkit as tk
 from ckanext.scheming.validation import scheming_validator, scheming_multiple_choice_output
-from ckanext.toolbelt.decorators import Collector
 from ckantoolkit import missing
 
-validator, get_validators = Collector("relationship").split()
 
-
-@validator
 @scheming_validator
-def related_entity(field, schema):
+def relationship_related_entity(field, schema):
     related_entity = field.get('related_entity')
     related_entity_type = field.get('related_entity_type')
     relation_type = field.get('relation_type')

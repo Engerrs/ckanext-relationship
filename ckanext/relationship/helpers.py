@@ -1,13 +1,9 @@
 from __future__ import annotations
 
 import ckan.plugins.toolkit as tk
-from ckanext.toolbelt.decorators import Collector
-
-helper, get_helpers = Collector("relationship").split()
 
 
-@helper
-def get_entity_list(entity, entity_type, include_private=True):
+def relationship_get_entity_list(entity, entity_type, include_private=True):
     """Return ids list of specified entity (entity, entity_type)"""
     context = {}
     if entity == 'package':
@@ -23,8 +19,7 @@ def get_entity_list(entity, entity_type, include_private=True):
     return entity_list
 
 
-@helper
-def get_current_relations_list(data, field) -> list[str]:
+def relationship_get_current_relations_list(data, field) -> list[str]:
     """Pull existing relations for form_snippet and display_snippet."""
     subject_id = field.get('id')
     subject_name = field.get('name')
