@@ -2,8 +2,36 @@
 
 # ckanext-relationship
 
-This extension provides a way to create relations between
-different types of packages, organizations and groups.
+The extension adds an additional table to the database that stores relationships between
+entities in the form of triples (subject_id, object_id, relation_type). The
+relation_type parameter sets the type of relationship: peer-to-peer (related_to <=>
+related_to) and subordinate (child_of <=> parent_of). Adding, deleting and getting a
+list of relationships between entities is carried out using actions (relation_create,
+relation_delete, relations_list). The description of the types of relationships between
+entities is carried out in the entity schema in the form:
+
+	- field_name: related_projects
+	  label: Related Projects
+	  preset: related_entity
+	  current_entity: package
+	  current_entity_type: dataset
+	  related_entity: package
+	  related_entity_type: project
+	  relation_type: related_to
+	  multiple: true
+      updatable_only: false
+	  required: false
+
+Entity (current_entity, related_entity) - one of three options: package, organization,
+group.
+
+Entity type (current_entity_type, related_entity_type) - entity customized using
+ckanext-scheming.
+
+Multiple - toggle the ability to add multiple related entities.
+
+Updatable_only - toggle the ability to add only entities that can be updated by the
+current user.
 
 ## Requirements
 

@@ -1,11 +1,11 @@
 {% import 'macros/form.html' as form %}
 {% macro help_text() %}
-    {% snippet 'scheming/form_snippets/help_text.html', field=field %}
+  {% snippet 'scheming/form_snippets/help_text.html', field=field %}
 {% endmacro %}
 
 {% set selected = h.relationship_get_current_relations_list(field, data) %}
 {% if not selected %}
-    {% set selected = request.args[field.field_name] %}
+  {% set selected = request.args[field.field_name] %}
 {% endif %}
 
 {% set classes = ['control-full'] %}
@@ -14,44 +14,44 @@
 {% endif %}
 
 {% call form.input_block(
-    'field-' + field.field_name,
-    label=h.scheming_language_text(field.label),
-    classes=classes,
-    error=errors[field.field_name],
-    is_required=h.scheming_field_required(field),
-    extra_html=help_text()
-    ) %}
+        'field-' ~ field.field_name,
+        label=h.scheming_language_text(field.label),
+        classes=classes,
+        error=errors[field.field_name],
+        is_required=h.scheming_field_required(field),
+        extra_html=help_text()
+        ) %}
 
-    {% set current_pkg_id = data.get('id', None) %}
-    {% set packages = h.relationship_get_entity_list(field.related_entity, field.related_entity_type) %}
-    {% set choices = [] %}
+  {% set current_entity_id = data.get('id', None) %}
+  {% set entities = h.relationship_get_entity_list(field.related_entity, field.related_entity_type) %}
+  {% set choices = [] %}
 
-    {% for pkg in packages %}
-        {% if pkg.id != current_pkg_id %}
-            {% do choices.append((pkg.id, pkg.get('title') or pkg.get('name'))) %}
-        {% endif %}
-    {% endfor %}
-
-    {% set choices = choices|sort(case_sensitive=false, attribute=1) %}
-
-    {% if not h.scheming_field_required(field) and not field.multiple %}
-        {% do choices.insert(0, ('', 'No relation')) %}
+  {% for entity in entities if entity.id != current_entity_id %}
+    {% if 'updatable_only' not in (field) or
+          h.check_access(field.related_entity ~ '_update', {'id': entity.id }) %}
+      {% do choices.append((entity.id, entity.get('title') or entity.get('name'))) %}
     {% endif %}
+  {% endfor %}
 
-    <select {% if field.multiple %}multiple{% endif %}
-            size='{{ field.get('select_size', field.choices|length) }}'
-            style='display: block'
-            id='field-{{ field.field_name }}'
-            name='{{ field.field_name }}'
-            {{ form.attributes(dict(
+  {% set choices = choices|sort(case_sensitive=false, attribute=1) %}
+
+  {% if not h.scheming_field_required(field) and not field.multiple %}
+    {% do choices.insert(0, ('', 'No relation')) %}
+  {% endif %}
+
+  <select {% if field.multiple %}multiple{% endif %}
+          size='{{ field.get('select_size', field.choices|length) }}'
+          style='display: block'
+          id='field-{{ field.field_name }}'
+          name='{{ field.field_name }}'
+          {{ form.attributes(dict(
         {'data-module': 'autocomplete'}, **field.get('form_select_attrs', {}))) }}>
-        {% for val, label in choices %}
-            <option id='field-{{ field.field_name }}-{{ val }}'
-                    value='{{ val }}'
-
-                    {{ 'selected ' if val in selected }} />
-            {{ label }}
-            </option>
-        {% endfor %}
-    </select>
+    {% for val, label in choices %}
+      <option id='field-{{ field.field_name }}-{{ val }}'
+              value='{{ val }}'
+              {{ 'selected ' if val in selected }} />
+      {{ label }}
+      </option>
+    {% endfor %}
+  </select>
 {% endcall %}
