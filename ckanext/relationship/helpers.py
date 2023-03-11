@@ -22,8 +22,7 @@ def relationship_get_entity_list(entity, entity_type, include_private=True):
             context, {"entity": entity, "entity_type": entity_type}
         )
         entity_list = [
-            {"id": id, "name": name, "title": title}
-            for id, name, title in entity_list
+            {"id": id, "name": name, "title": title} for id, name, title in entity_list
         ]
     return entity_list
 
@@ -42,9 +41,7 @@ def relationship_get_current_relations_list(data, field) -> list[str]:
     current_relation_by_name = []
 
     if subject_id:
-        current_relation_by_id = tk.get_action(
-            "relationship_relations_ids_list"
-        )(
+        current_relation_by_id = tk.get_action("relationship_relations_ids_list")(
             {},
             {
                 "subject_id": subject_id,
@@ -54,9 +51,7 @@ def relationship_get_current_relations_list(data, field) -> list[str]:
             },
         )
     if subject_name:
-        current_relation_by_name = tk.get_action(
-            "relationship_relations_ids_list"
-        )(
+        current_relation_by_name = tk.get_action("relationship_relations_ids_list")(
             {},
             {
                 "subject_id": subject_name,

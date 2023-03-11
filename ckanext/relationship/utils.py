@@ -7,8 +7,8 @@ import ckanext.scheming.helpers as sch
 
 
 def get_relations_info(pkg_type: str) -> list[tuple[str, str, str]]:
-    """Return information about relation (related_entity, related_entity_type, relation_type)
-    of specified package type (pkg_type) from schema.
+    """Return information about relation (related_entity, related_entity_type,
+    relation_type) of specified package type (pkg_type) from schema.
 
     Returns:
         List of tuples of related entities: entity, entity_type, relation_type.
@@ -33,8 +33,9 @@ def get_relation_field(
     object_entity_type: str,
     relation_type: str,
 ) -> dict[str, str]:
-    """Return field dict for specified package type (pkg_type) describes relation with specified entity
-    (object_entity, object_entity_type) and type of relation (relation_type).
+    """Return field dict for specified package type (pkg_type) describes relation
+    with specified entity (object_entity, object_entity_type) and type of relation
+    (relation_type).
     """
     schema = sch.scheming_get_schema("dataset", pkg_type)
     if not schema:
@@ -55,9 +56,7 @@ def entity_name_by_id(entity_id):
     """
 
     try:
-        pkg = tk.get_action("package_show")(
-            {"ignore_auth": True}, {"id": entity_id}
-        )
+        pkg = tk.get_action("package_show")({"ignore_auth": True}, {"id": entity_id})
         if pkg:
             return pkg.get("name")
     except NotFound:
@@ -73,9 +72,7 @@ def entity_name_by_id(entity_id):
         pass
 
     try:
-        group = tk.get_action("group_show")(
-            {"ignore_auth": True}, {"id": entity_id}
-        )
+        group = tk.get_action("group_show")({"ignore_auth": True}, {"id": entity_id})
         if group:
             return group.get("name")
     except NotFound:

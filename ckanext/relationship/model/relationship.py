@@ -1,7 +1,8 @@
+from sqlalchemy import Column, Text, or_
+
 import ckan.logic as logic
 import ckan.model as model
 from ckan.model.types import make_uuid
-from sqlalchemy import Column, Text, or_
 
 from .base import Base
 
@@ -54,9 +55,7 @@ class Relationship(Base):
                     cls.subject_id == subject_name,
                 )
             )
-            .filter(
-                or_(cls.object_id == object_id, cls.object_id == object_name)
-            )
+            .filter(or_(cls.object_id == object_id, cls.object_id == object_name))
             .filter(cls.relation_type == relation_type)
             .one_or_none()
         )

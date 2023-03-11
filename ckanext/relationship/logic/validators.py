@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import json
 
-import ckan.plugins.toolkit as tk
 from ckantoolkit import missing
+
+import ckan.plugins.toolkit as tk
 
 from ckanext.scheming.validation import (
     scheming_multiple_choice_output,
@@ -36,12 +37,8 @@ def relationship_related_entity(field, schema):
         data[("add_relations",)] = data.get(("add_relations",), [])
         data[("del_relations",)] = data.get(("del_relations",), [])
 
-        data[("add_relations",)].extend(
-            [(rel, relation_type) for rel in add_relations]
-        )
-        data[("del_relations",)].extend(
-            [(rel, relation_type) for rel in del_relations]
-        )
+        data[("add_relations",)].extend([(rel, relation_type) for rel in add_relations])
+        data[("del_relations",)].extend([(rel, relation_type) for rel in del_relations])
 
     return validator
 
@@ -69,9 +66,7 @@ def _get_selected_relations(selected):
     selected_relations = selected
     if selected_relations is not missing:
         selected_relations = scheming_multiple_choice_output(selected)
-        selected_relations = (
-            [] if selected_relations == [""] else selected_relations
-        )
+        selected_relations = [] if selected_relations == [""] else selected_relations
     else:
         selected_relations = []
     return set(selected_relations)

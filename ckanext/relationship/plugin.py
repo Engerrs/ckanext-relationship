@@ -3,8 +3,9 @@ import ckan.plugins.toolkit as tk
 from ckan.lib.search import rebuild
 from ckan.logic import NotFound
 
-import ckanext.relationship.utils as utils
 import ckanext.scheming.helpers as sch
+
+import ckanext.relationship.utils as utils
 
 
 @tk.blanket.actions
