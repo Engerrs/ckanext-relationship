@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 
 from ckantoolkit import missing
+from six import string_types
 
 import ckan.plugins.toolkit as tk
 
@@ -24,10 +25,11 @@ def relationship_related_entity(field, schema):
 
         entity_id = data.get(("id",))
 
-        current_relations = _get_current_relations(
+        current_relations = get_current_relations(
             entity_id, related_entity, related_entity_type, relation_type
         )
-        selected_relations = _get_selected_relations(data[key])
+
+        selected_relations = get_selected_relations(data[key])
 
         data[key] = json.dumps([value for value in selected_relations])
 
@@ -43,7 +45,7 @@ def relationship_related_entity(field, schema):
     return validator
 
 
-def _get_current_relations(
+def get_current_relations(
     entity_id, related_entity, related_entity_type, relation_type
 ):
     if entity_id:
@@ -62,10 +64,19 @@ def _get_current_relations(
     return set(current_relations)
 
 
-def _get_selected_relations(selected):
-    selected_relations = selected
+def get_selected_relations(selected_relations):
+    if isinstance(selected_relations, string_types) and "," in selected_relations:
+        selected_relations = selected_relations.split(",")
+
+    if (
+        len(selected_relations) == 1
+        and isinstance(selected_relations[0], string_types)
+        and "," in selected_relations[0]
+    ):
+        selected_relations = selected_relations[0].split(",")
+
     if selected_relations is not missing:
-        selected_relations = scheming_multiple_choice_output(selected)
+        selected_relations = scheming_multiple_choice_output(selected_relations)
         selected_relations = [] if selected_relations == [""] else selected_relations
     else:
         selected_relations = []

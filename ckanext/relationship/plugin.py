@@ -12,19 +12,16 @@ import ckanext.relationship.utils as utils
 @tk.blanket.auth_functions
 @tk.blanket.validators
 @tk.blanket.helpers
+@tk.blanket.blueprints
 class RelationshipPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
-    plugins.implements(plugins.IActions)
-    plugins.implements(plugins.IAuthFunctions)
-    plugins.implements(plugins.IValidators)
-    plugins.implements(plugins.ITemplateHelpers)
     plugins.implements(plugins.IPackageController, inherit=True)
 
     # IConfigurer
     def update_config(self, config_):
         tk.add_template_directory(config_, "templates")
         tk.add_public_directory(config_, "public")
-        tk.add_resource("fanstatic", "relationship")
+        tk.add_resource("assets", "relationship")
 
     # IPackageController
     def after_dataset_create(self, context, pkg_dict):

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+
 import ckan.plugins.toolkit as tk
 
 
@@ -61,3 +63,14 @@ def relationship_get_current_relations_list(data, field) -> list[str]:
             },
         )
     return current_relation_by_id + current_relation_by_name
+
+
+def relationship_get_selected_json(selected_ids: list = []) -> str:
+    selected_pkgs = []
+    for pkg_id in selected_ids:
+        try:
+            pkg_dict = tk.get_action("package_show")({}, {"id": pkg_id})
+            selected_pkgs.append({"name": pkg_dict["id"], "title": pkg_dict["title"]})
+        except Exception:
+            continue
+    return json.dumps(selected_pkgs)
