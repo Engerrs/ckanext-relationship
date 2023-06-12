@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import json
+from typing import Any
 
 import ckan.plugins.toolkit as tk
+from ckan import authz
 
 
 def relationship_get_entity_list(entity, entity_type, include_private=True):
@@ -13,7 +15,6 @@ def relationship_get_entity_list(entity, entity_type, include_private=True):
             context,
             {
                 "fq": f"type:{entity_type}",
-                "fl": "id, name, title",
                 "rows": 1000,
                 "include_private": include_private,
             },
@@ -74,3 +75,35 @@ def relationship_get_selected_json(selected_ids: list = []) -> str:
         except Exception:
             continue
     return json.dumps(selected_pkgs)
+
+
+def relationship_get_choices_for_related_entity_field(
+    field: dict[str, Any], current_entity_id: str | None
+) -> list[str | None]:
+    entities = relationship_get_entity_list(
+        field["related_entity"], field["related_entity_type"]
+    )
+
+    choices = []
+
+    for entity in entities:
+        if entity["id"] == current_entity_id:
+            continue
+
+        if field.get("updatable_only", False) and not tk.h.check_access(
+            field["related_entity"] + "_update", {"id": entity["id"]}
+        ):
+            continue
+
+        if (
+            field.get("owned_only", False)
+            and not authz.is_sysadmin(tk.current_user.id)
+            and field["related_entity"] == "package"
+            and tk.current_user.id != entity["creator_user_id"]
+        ):
+            continue
+
+        choices.append((entity["id"], entity.get("title") or entity.get("name")))
+
+    choices.sort(key=lambda x: x[1])
+    return choices

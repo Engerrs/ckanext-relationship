@@ -22,18 +22,7 @@
         extra_html=help_text()
         ) %}
 
-  {% set current_entity_id = data.get('id', None) %}
-  {% set entities = h.relationship_get_entity_list(field.related_entity, field.related_entity_type) %}
-  {% set choices = [] %}
-
-  {% for entity in entities if entity.id != current_entity_id %}
-    {% if not field.get('updatable_only', false) or
-          h.check_access(field.related_entity ~ '_update', {'id': entity.id }) %}
-      {% do choices.append((entity.id, entity.get('title') or entity.get('name'))) %}
-    {% endif %}
-  {% endfor %}
-
-  {% set choices = choices|sort(case_sensitive=false, attribute=1) %}
+  {% set choices = h.relationship_get_choices_for_related_entity_field(field, data.get('id', None)) %}
 
   {% if not h.scheming_field_required(field) and not field.multiple %}
     {% do choices.insert(0, ('', 'No relation')) %}
