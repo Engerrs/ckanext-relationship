@@ -20,9 +20,11 @@ def relationships_autocomplete():
     entity_type = tk.request.args.get("entity_type", "dataset")
     updatable_only = tk.asbool(tk.request.args.get("updatable_only", "False"))
     owned_only = tk.asbool(tk.request.args.get("owned_only", "False"))
+    check_sysadmin = tk.asbool(tk.request.args.get("check_sysadmin", "False"))
 
     fq = f"type:{entity_type} -id:{current_entity_id}"
-    if owned_only and not authz.is_sysadmin(tk.current_user.id):
+
+    if owned_only and not (authz.is_sysadmin(tk.current_user.id) and not check_sysadmin):
         fq += f" creator_user_id:{tk.current_user.id}"
 
     packages = tk.get_action("package_search")(
@@ -36,10 +38,6 @@ def relationships_autocomplete():
             "sort": "score desc",
         },
     )["results"]
-
-    # packages = filter(
-    #     lambda pkg: incomplete.lower() in pkg["title"].lower(), packages
-    # )
 
     if updatable_only:
         packages = filter(

@@ -13,7 +13,7 @@
     "data-module-label": "title",
     "data-module-tags": "true",
     "data-module-createtags": "false",
-    "data-module-source": "/api/util/relationships/autocomplete?incomplete=?&current_entity_id=%s&entity_type=%s&updatable_only=%s&owned_only=%s"|format(data.get('id', None), field.related_entity_type, field.get('updatable_only', false), field.get('owned_only', false)),
+    "data-module-source": "/api/util/relationships/autocomplete?incomplete=?&current_entity_id=%s&entity_type=%s&updatable_only=%s&owned_only=%s&check_sysadmin=%s"|format(data.get('id', None), field.related_entity_type, field.get('updatable_only', false), field.get('owned_only', false), field.get('check_sysadmin', false)),
     "data-module-selected": selected_json,
 } %}
 
