@@ -13,7 +13,7 @@ def get_blueprints():
 relationships = Blueprint("relationships", __name__)
 
 
-@relationships.route("/api/util/relationships/autocomplete")
+@relationships.route("/api/2/util/relationships/autocomplete")
 def relationships_autocomplete():
     incomplete = tk.request.args.get("incomplete", "")
     current_entity_id = tk.request.args.get("current_entity_id")
