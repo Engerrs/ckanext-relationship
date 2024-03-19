@@ -10,17 +10,19 @@ list of relationships between entities is carried out using actions (relation_cr
 relation_delete, relations_list). The description of the types of relationships between
 entities is carried out in the entity schema in the form:
 
-	- field_name: related_projects
-	  label: Related Projects
-	  preset: related_entity
-	  current_entity: package
-	  current_entity_type: dataset
-	  related_entity: package
-	  related_entity_type: project
-	  relation_type: related_to
-	  multiple: true
-      updatable_only: false
-	  required: false
+```yaml
+- field_name: related_projects
+  label: Related Projects
+  preset: related_entity
+  current_entity: package
+  current_entity_type: dataset
+  related_entity: package
+  related_entity_type: project
+  relation_type: related_to
+  multiple: true
+  updatable_only: false
+  required: false
+```
 
 Entity (current_entity, related_entity) - one of three options: package, organization,
 group.

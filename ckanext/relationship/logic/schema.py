@@ -2,7 +2,7 @@ from ckan.logic.schema import validator_args
 
 
 @validator_args
-def relation_create(not_empty, one_of, ignore_missing):
+def relation_create(not_empty, one_of):
     return {
         "subject_id": [
             not_empty,
@@ -73,7 +73,7 @@ def relations_ids_list(not_empty, one_of, ignore_missing):
 
 
 @validator_args
-def get_entity_list(not_empty, one_of, ignore_missing):
+def get_entity_list(not_empty, one_of):
     return {
         "entity": [
             not_empty,
@@ -82,4 +82,21 @@ def get_entity_list(not_empty, one_of, ignore_missing):
         "entity_type": [
             not_empty,
         ],
+    }
+
+
+@validator_args
+def autocomplete(not_empty):
+    return {
+        "incomplete": [],
+        "current_entity_id": [
+            not_empty,
+        ],
+        "entity_type": [
+            not_empty,
+        ],
+        "updatable_only": [],
+        "owned_only": [],
+        "check_sysadmin": [],
+        "format_autocomplete_helper": [],
     }

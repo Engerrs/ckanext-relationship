@@ -107,3 +107,17 @@ def relationship_get_choices_for_related_entity_field(
 
     choices.sort(key=lambda x: x[1])
     return choices
+
+
+def relationship_format_autocomplete(packages: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "ResultSet": {
+            "Result": [
+                {
+                    "name": pkg["id"],
+                    "title": pkg["title"],
+                }
+                for pkg in packages
+            ]
+        }
+    }
