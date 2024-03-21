@@ -24,3 +24,8 @@ def relationship_relations_ids_list(context, data_dict):
 @tk.auth_allow_anonymous_access
 def relationship_get_entity_list(context, data_dict):
     return {"success": True}
+
+
+@tk.auth_allow_anonymous_access
+def relationship_relationship_autocomplete(context, data_dict):
+    return {"success": True}

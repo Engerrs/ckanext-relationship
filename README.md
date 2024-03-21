@@ -1,4 +1,4 @@
-[![Tests](https://github.com//ckanext-relationship/workflows/Tests/badge.svg?branch=main)](https://github.com//ckanext-relationship/actions)
+[![Tests](https://github.com/DataShades/ckanext-relationship/workflows/Tests/badge.svg)](https://github.com/DataShades/ckanext-relationship/actions/workflows/test.yml)
 
 # ckanext-relationship
 

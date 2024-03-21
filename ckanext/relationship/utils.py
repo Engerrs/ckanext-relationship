@@ -39,7 +39,7 @@ def get_relation_field(
     """
     schema = sch.scheming_get_schema("dataset", pkg_type)
     if not schema:
-        return []
+        return {}
     for field in schema["dataset_fields"]:
         if (
             field.get("related_entity") == object_entity
@@ -50,30 +50,16 @@ def get_relation_field(
     return {}
 
 
-def entity_name_by_id(entity_id):
+def entity_name_by_id(entity_id: str) -> str:
+    """Retrieves the name of an entity given its ID.
+    The entity can be a package, organization, or group.
     """
-    Returns pkg name by its id
-    """
+    actions = ["package_show", "organization_show", "group_show"]
 
-    try:
-        pkg = tk.get_action("package_show")({"ignore_auth": True}, {"id": entity_id})
-        if pkg:
-            return pkg.get("name")
-    except NotFound:
-        pass
-
-    try:
-        org = tk.get_action("organization_show")(
-            {"ignore_auth": True}, {"id": entity_id}
-        )
-        if org:
-            return org.get("name")
-    except NotFound:
-        pass
-
-    try:
-        group = tk.get_action("group_show")({"ignore_auth": True}, {"id": entity_id})
-        if group:
-            return group.get("name")
-    except NotFound:
-        pass
+    for action in actions:
+        try:
+            entity = tk.get_action(action)({"ignore_auth": True}, {"id": entity_id})
+            if entity:
+                return entity.get("name")
+        except NotFound:
+            pass
