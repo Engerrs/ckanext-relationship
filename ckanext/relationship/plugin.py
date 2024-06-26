@@ -1,11 +1,11 @@
-import ckan.plugins as plugins
 import ckan.plugins.toolkit as tk
+from ckan import plugins
 from ckan.lib.search import rebuild
 from ckan.logic import NotFound
 
 import ckanext.scheming.helpers as sch
 
-import ckanext.relationship.utils as utils
+from ckanext.relationship import utils
 
 
 @tk.blanket.actions
@@ -41,12 +41,14 @@ class RelationshipPlugin(plugins.SingletonPlugin):
         subject_id = pkg_dict["id"]
 
         relations_ids_list = tk.get_action("relationship_relations_ids_list")(
-            context, {"subject_id": subject_id}
+            context,
+            {"subject_id": subject_id},
         )
 
         for object_id in relations_ids_list:
             tk.get_action("relationship_relation_delete")(
-                context, {"subject_id": subject_id, "object_id": object_id}
+                context,
+                {"subject_id": subject_id, "object_id": object_id},
             )
 
             try:
@@ -80,16 +82,18 @@ class RelationshipPlugin(plugins.SingletonPlugin):
             if not relations_ids:
                 continue
             field = utils.get_relation_field(
-                pkg_type, related_entity, related_entity_type, relation_type
+                pkg_type,
+                related_entity,
+                related_entity_type,
+                relation_type,
             )
             pkg_dict[f'vocab_{field["field_name"]}'] = relations_ids
 
-            del pkg_dict[field["field_name"]]
+            pkg_dict.pop(field["field_name"], None)
 
         return pkg_dict
 
     def after_dataset_show(self, context, pkg_dict):
-        pkg_id = pkg_dict["id"]
         pkg_type = pkg_dict["type"]
         relations_info = utils.get_relations_info(pkg_type)
         for (
@@ -98,19 +102,12 @@ class RelationshipPlugin(plugins.SingletonPlugin):
             relation_type,
         ) in relations_info:
             field = utils.get_relation_field(
-                pkg_type, related_entity, related_entity_type, relation_type
+                pkg_type,
+                related_entity,
+                related_entity_type,
+                relation_type,
             )
-            pkg_dict[field["field_name"]] = tk.get_action(
-                "relationship_relations_ids_list"
-            )(
-                context,
-                {
-                    "subject_id": pkg_id,
-                    "object_entity": related_entity,
-                    "object_type": related_entity_type,
-                    "relation_type": relation_type,
-                },
-            )
+            pkg_dict.pop(field["field_name"], None)
 
 
 def _update_relations(context, pkg_dict):

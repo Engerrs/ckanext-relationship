@@ -79,10 +79,14 @@ class TestRelationCreate:
         )
 
         relation_straight = Relationship.by_object_id(
-            subject_id, object_id, relation_type
+            subject_id,
+            object_id,
+            relation_type,
         )
         relation_reverse = Relationship.by_object_id(
-            object_id, subject_id, relation_type
+            object_id,
+            subject_id,
+            relation_type,
         )
 
         assert relation_straight.subject_id == subject_id
@@ -187,10 +191,14 @@ class TestRelationDelete:
         )
 
         relation_straight = Relationship.by_object_id(
-            subject_id, object_id, relation_type
+            subject_id,
+            object_id,
+            relation_type,
         )
         relation_reverse = Relationship.by_object_id(
-            object_id, subject_id, relation_type
+            object_id,
+            subject_id,
+            relation_type,
         )
 
         assert not relation_straight
@@ -216,10 +224,14 @@ class TestRelationDelete:
         tk.get_action("package_delete")({"ignore_auth": True}, {"id": subject_id})
 
         relation_straight = Relationship.by_object_id(
-            subject_id, object_id, relation_type
+            subject_id,
+            object_id,
+            relation_type,
         )
         relation_reverse = Relationship.by_object_id(
-            object_id, subject_id, relation_type
+            object_id,
+            subject_id,
+            relation_type,
         )
 
         assert not relation_straight
@@ -248,7 +260,11 @@ class TestRelationList:
         ],
     )
     def test_relation_list(
-        self, subject_factory, object_factory, object_entity, object_type
+        self,
+        subject_factory,
+        object_factory,
+        object_entity,
+        object_type,
     ):
         subject = subject_factory()
         object = object_factory()

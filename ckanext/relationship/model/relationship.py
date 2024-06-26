@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Text, or_
 
-import ckan.logic as logic
-import ckan.model as model
+from ckan import logic, model
 from ckan.model.types import make_uuid
 
 from .base import Base
@@ -53,7 +52,7 @@ class Relationship(Base):
                 or_(
                     cls.subject_id == subject_id,
                     cls.subject_id == subject_name,
-                )
+                ),
             )
             .filter(or_(cls.object_id == object_id, cls.object_id == object_name))
             .filter(cls.relation_type == relation_type)
@@ -62,12 +61,16 @@ class Relationship(Base):
 
     @classmethod
     def by_subject_id(
-        cls, subject_id, object_entity, object_type=None, relation_type=None
+        cls,
+        subject_id,
+        object_entity,
+        object_type=None,
+        relation_type=None,
     ):
         subject_name = _entity_name_by_id(subject_id)
 
         q = model.Session.query(cls).filter(
-            or_(cls.subject_id == subject_id, cls.subject_id == subject_name)
+            or_(cls.subject_id == subject_id, cls.subject_id == subject_name),
         )
 
         if object_entity:
@@ -76,7 +79,7 @@ class Relationship(Base):
                 or_(
                     object_class.id == cls.object_id,
                     object_class.name == cls.object_id,
-                )
+                ),
             )
 
             if object_type:

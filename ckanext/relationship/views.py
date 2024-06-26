@@ -25,7 +25,7 @@ def relationships_autocomplete():
             "owned_only": tk.asbool(request_args.get("owned_only")),
             "check_sysadmin": tk.asbool(request_args.get("check_sysadmin")),
             "format_autocomplete_helper": request_args.get(
-                "format_autocomplete_helper"
+                "format_autocomplete_helper",
             ),
         },
     )

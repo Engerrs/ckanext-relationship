@@ -22,7 +22,8 @@ def relationship_get_entity_list(entity, entity_type, include_private=True):
         entity_list = entity_list["results"]
     else:
         entity_list = tk.get_action("relationship_get_entity_list")(
-            context, {"entity": entity, "entity_type": entity_type}
+            context,
+            {"entity": entity, "entity_type": entity_type},
         )
         entity_list = [
             {"id": id, "name": name, "title": title} for id, name, title in entity_list
@@ -78,10 +79,12 @@ def relationship_get_selected_json(selected_ids: list = []) -> str:
 
 
 def relationship_get_choices_for_related_entity_field(
-    field: dict[str, Any], current_entity_id: str | None
+    field: dict[str, Any],
+    current_entity_id: str | None,
 ) -> list[str | None]:
     entities = relationship_get_entity_list(
-        field["related_entity"], field["related_entity_type"]
+        field["related_entity"],
+        field["related_entity_type"],
     )
 
     choices = []
@@ -91,7 +94,8 @@ def relationship_get_choices_for_related_entity_field(
             continue
 
         if field.get("updatable_only", False) and not tk.h.check_access(
-            field["related_entity"] + "_update", {"id": entity["id"]}
+            field["related_entity"] + "_update",
+            {"id": entity["id"]},
         ):
             continue
 
@@ -118,6 +122,6 @@ def relationship_format_autocomplete(packages: dict[str, Any]) -> dict[str, Any]
                     "title": pkg["title"],
                 }
                 for pkg in packages
-            ]
-        }
+            ],
+        },
     }

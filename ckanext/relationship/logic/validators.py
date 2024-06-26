@@ -26,7 +26,10 @@ def relationship_related_entity(field, schema):
         entity_id = data.get(("id",))
 
         current_relations = get_current_relations(
-            entity_id, related_entity, related_entity_type, relation_type
+            entity_id,
+            related_entity,
+            related_entity_type,
+            relation_type,
         )
 
         selected_relations = get_selected_relations(data[key])
@@ -46,7 +49,10 @@ def relationship_related_entity(field, schema):
 
 
 def get_current_relations(
-    entity_id, related_entity, related_entity_type, relation_type
+    entity_id,
+    related_entity,
+    related_entity_type,
+    relation_type,
 ):
     if entity_id:
         current_relations = tk.get_action("relationship_relations_list")(
