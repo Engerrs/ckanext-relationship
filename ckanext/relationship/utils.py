@@ -63,3 +63,4 @@ def entity_name_by_id(entity_id: str) -> str:
                 return entity.get("name")
         except NotFound:
             pass
+    return None

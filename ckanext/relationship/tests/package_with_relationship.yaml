@@ -1,0 +1,31 @@
+scheming_version: 1
+dataset_type: package_with_relationship
+about_url: http://github.com/ckan/ckanext-relationship
+
+dataset_fields:
+  - field_name: related_packages
+    validators: relationship_related_entity
+    current_entity: package
+    current_entity_type: package_with_relationship
+    related_entity: package
+    related_entity_type: package_with_relationship
+    relation_type: related_to
+
+resource_fields:
+
+- field_name: url
+  label: URL
+  preset: resource_url_upload
+
+- field_name: name
+  label: Name
+  form_placeholder: eg. January 2011 Gold Prices
+
+- field_name: description
+  label: Description
+  form_snippet: markdown.html
+  form_placeholder: Some useful notes about the data
+
+- field_name: format
+  label: Format
+  preset: resource_format_autocomplete

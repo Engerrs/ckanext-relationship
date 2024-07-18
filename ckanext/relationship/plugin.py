@@ -5,16 +5,17 @@ from ckan.logic import NotFound
 
 import ckanext.scheming.helpers as sch
 
-from ckanext.relationship import utils
+from ckanext.relationship import helpers, utils, views
+from ckanext.relationship.logic import action, auth, validators
 
 
-@tk.blanket.actions
-@tk.blanket.auth_functions
-@tk.blanket.validators
-@tk.blanket.helpers
-@tk.blanket.blueprints
 class RelationshipPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
+    plugins.implements(plugins.IActions)
+    plugins.implements(plugins.IAuthFunctions)
+    plugins.implements(plugins.IValidators)
+    plugins.implements(plugins.ITemplateHelpers)
+    plugins.implements(plugins.IBlueprint)
     plugins.implements(plugins.IPackageController, inherit=True)
 
     # IConfigurer
@@ -22,6 +23,26 @@ class RelationshipPlugin(plugins.SingletonPlugin):
         tk.add_template_directory(config_, "templates")
         tk.add_public_directory(config_, "public")
         tk.add_resource("assets", "relationship")
+
+    # IActions
+    def get_actions(self):
+        return action.get_actions()
+
+    # IAuthFunctions
+    def get_auth_functions(self):
+        return auth.get_auth_functions()
+
+    # IValidators
+    def get_validators(self):
+        return validators.get_validators()
+
+    # ITemplateHelpers
+    def get_helpers(self):
+        return helpers.get_helpers()
+
+    # IBlueprint
+    def get_blueprint(self):
+        return views.get_blueprints()
 
     # IPackageController
     def after_dataset_create(self, context, pkg_dict):
@@ -93,21 +114,9 @@ class RelationshipPlugin(plugins.SingletonPlugin):
 
         return pkg_dict
 
-    def after_dataset_show(self, context, pkg_dict):
-        pkg_type = pkg_dict["type"]
-        relations_info = utils.get_relations_info(pkg_type)
-        for (
-            related_entity,
-            related_entity_type,
-            relation_type,
-        ) in relations_info:
-            field = utils.get_relation_field(
-                pkg_type,
-                related_entity,
-                related_entity_type,
-                relation_type,
-            )
-            pkg_dict.pop(field["field_name"], None)
+
+if tk.check_ckan_version("2.10"):
+    tk.blanket.config_declarations(RelationshipPlugin)
 
 
 def _update_relations(context, pkg_dict):

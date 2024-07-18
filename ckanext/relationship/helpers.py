@@ -7,6 +7,17 @@ import ckan.plugins.toolkit as tk
 from ckan import authz
 
 
+def get_helpers():
+    helper_functions = [
+        relationship_get_entity_list,
+        relationship_get_current_relations_list,
+        relationship_get_selected_json,
+        relationship_get_choices_for_related_entity_field,
+        relationship_format_autocomplete,
+    ]
+    return {f.__name__: f for f in helper_functions}
+
+
 def relationship_get_entity_list(entity, entity_type, include_private=True):
     """Return ids list of specified entity (entity, entity_type)"""
     context = {}
@@ -67,7 +78,10 @@ def relationship_get_current_relations_list(data, field) -> list[str]:
     return current_relation_by_id + current_relation_by_name
 
 
-def relationship_get_selected_json(selected_ids: list = []) -> str:
+def relationship_get_selected_json(selected_ids: list | None = None) -> str:
+    if not selected_ids:
+        return json.dumps([])
+
     selected_pkgs = []
     for pkg_id in selected_ids:
         try:

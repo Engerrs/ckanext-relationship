@@ -16,6 +16,18 @@ from ckanext.relationship.utils import entity_name_by_id
 NotFound = logic.NotFound
 
 
+def get_actions():
+    return {
+        "relationship_relation_create": relationship_relation_create,
+        "relationship_relation_delete": relationship_relation_delete,
+        "relationship_relations_list": relationship_relations_list,
+        "relationship_relations_ids_list": relationship_relations_ids_list,
+        "relationship_get_entity_list": relationship_get_entity_list,
+        "relationship_autocomplete": relationship_autocomplete,
+        "package_show": package_show,
+    }
+
+
 @validate(schema.relation_create)
 def relationship_relation_create(
     context: Context,
@@ -155,7 +167,7 @@ def relationship_relations_ids_list(context: Context, data_dict: DataDict) -> li
 
     rel_list = relationship_relations_list(context, data_dict)
 
-    return list(set([rel["object_id"] for rel in rel_list]))
+    return list({rel["object_id"] for rel in rel_list})
 
 
 @validate(schema.get_entity_list)
@@ -219,10 +231,33 @@ def relationship_autocomplete(context: Context, data_dict: DataDict) -> DataDict
 @tk.side_effect_free
 def package_show(next_: Action, context: Context, data_dict: DataDict) -> DataDict:
     result = next_(context, data_dict)
-    if "with_relationships" not in data_dict:
-        return result
+
     pkg_id = result["id"]
     pkg_type = result["type"]
+
+    views_without_relationships = tk.config[
+        "ckanext.relationship.views_without_relationships_in_package_show"
+    ]
+
+    if (
+        tk.get_endpoint()[1] in views_without_relationships
+        and "with_relationships" not in data_dict
+    ):
+        relations_info = utils.get_relations_info(pkg_type)
+        for (
+            related_entity,
+            related_entity_type,
+            relation_type,
+        ) in relations_info:
+            field = utils.get_relation_field(
+                pkg_type,
+                related_entity,
+                related_entity_type,
+                relation_type,
+            )
+            result.pop(field["field_name"], None)
+        return result
+
     relations_info = utils.get_relations_info(pkg_type)
     for (
         related_entity,
@@ -235,13 +270,16 @@ def package_show(next_: Action, context: Context, data_dict: DataDict) -> DataDi
             related_entity_type,
             relation_type,
         )
-        result[field["field_name"]] = tk.get_action("relationship_relations_list")(
-            context,
-            {
-                "subject_id": pkg_id,
-                "object_entity": related_entity,
-                "object_type": related_entity_type,
-                "relation_type": relation_type,
-            },
-        )
+        result[field["field_name"]] = [
+            relation["object_id"]
+            for relation in tk.get_action("relationship_relations_list")(
+                context,
+                {
+                    "subject_id": pkg_id,
+                    "object_entity": related_entity,
+                    "object_type": related_entity_type,
+                    "relation_type": relation_type,
+                },
+            )
+        ]
     return result

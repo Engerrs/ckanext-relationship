@@ -241,7 +241,7 @@ class TestRelationDelete:
 @pytest.mark.usefixtures("clean_db")
 class TestRelationList:
     @pytest.mark.parametrize(
-        "subject_factory, object_factory, object_entity, object_type",
+        ("subject_factory", "object_factory", "object_entity", "object_type"),
         [
             (factories.Dataset, factories.Dataset, "package", "dataset"),
             (factories.Dataset, factories.Organization, "organization", "organization"),
@@ -388,3 +388,45 @@ class TestRelationsIdsList:
 
         assert object1_id in result
         assert object2_id in result
+
+
+@pytest.mark.usefixtures("clean_db")
+def test_keep_relation_after_dataset_patch():
+    subject_dataset = factories.Dataset(type="package_with_relationship")
+    object_dataset = factories.Dataset(type="package_with_relationship")
+
+    subject_id = subject_dataset["id"]
+    object_id = object_dataset["id"]
+    relation_type = "related_to"
+
+    tk.get_action("relationship_relation_create")(
+        {"ignore_auth": True},
+        {
+            "subject_id": subject_id,
+            "object_id": object_id,
+            "relation_type": relation_type,
+        },
+    )
+
+    tk.get_action("package_patch")(
+        {"ignore_auth": True},
+        {
+            "id": subject_id,
+            "title": "New title",
+        },
+    )
+
+    relation_straight = Relationship.by_object_id(
+        subject_id,
+        object_id,
+        relation_type,
+    )
+
+    relation_reverse = Relationship.by_object_id(
+        object_id,
+        subject_id,
+        relation_type,
+    )
+
+    assert relation_straight is not None
+    assert relation_reverse is not None

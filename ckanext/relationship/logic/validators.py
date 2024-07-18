@@ -13,6 +13,12 @@ from ckanext.scheming.validation import (
 )
 
 
+def get_validators():
+    return {
+        "relationship_related_entity": relationship_related_entity,
+    }
+
+
 @scheming_validator
 def relationship_related_entity(field, schema):
     related_entity = field.get("related_entity")

@@ -110,3 +110,4 @@ def _entity_name_by_id(entity_id):
     )
     if pkg:
         return group.name
+    return None

@@ -1,0 +1,14 @@
+version: 1
+groups:
+  - annotation: ckanext-mbie-erms-shared
+    options:
+      - key: ckanext.relationship.views_without_relationships_in_package_show
+        type: list
+        default: search read
+        description: |
+          Adding relationships to the package show result can be time-consuming and
+          may decrease the performance of pages where this action is called multiple
+          times, such as the search page. Therefore, by default, relationships are
+          hidden from the package show for both the search page and the package read
+          page. To include relationships in the package_show action, you must add the
+          flag with_relationships=True to the data_dict.
