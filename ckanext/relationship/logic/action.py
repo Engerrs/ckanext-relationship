@@ -1,14 +1,16 @@
 from __future__ import annotations
 
+from typing import Any
+
 from flask import jsonify
 from sqlalchemy import or_
 
 import ckan.plugins.toolkit as tk
 from ckan import authz, logic
 from ckan.logic import validate
-from ckan.types import Action, Context, DataDict
 
 from ckanext.relationship import utils
+from ckanext.relationship.config import views_without_relationships_in_package_show
 from ckanext.relationship.logic import schema
 from ckanext.relationship.model.relationship import Relationship
 from ckanext.relationship.utils import entity_name_by_id
@@ -29,10 +31,7 @@ def get_actions():
 
 
 @validate(schema.relation_create)
-def relationship_relation_create(
-    context: Context,
-    data_dict: DataDict,
-) -> list[dict[str, str]]:
+def relationship_relation_create(context, data_dict) -> list[dict[str, str]]:
     """Create relation with specified type (relation_type) between two entities
     specified by ids (subject_id, object_id). Also create reverse relation."""
     tk.check_access("relationship_relation_create", context, data_dict)
@@ -64,10 +63,7 @@ def relationship_relation_create(
 
 
 @validate(schema.relation_delete)
-def relationship_relation_delete(
-    context: Context,
-    data_dict: DataDict,
-) -> list[dict[str, str]]:
+def relationship_relation_delete(context, data_dict) -> list[dict[str, str]]:
     """Delete relation with specified type (relation_type) between two entities
     specified by ids (subject_id, object_id). Also delete reverse relation."""
     tk.check_access("relationship_relation_delete", context, data_dict)
@@ -128,10 +124,7 @@ def relationship_relation_delete(
 
 
 @validate(schema.relations_list)
-def relationship_relations_list(
-    context: Context,
-    data_dict: DataDict,
-) -> list[dict[str, str]]:
+def relationship_relations_list(context, data_dict) -> list[dict[str, str]]:
     """Return a list of dictionaries representing the relations of a specified entity
     (object_entity, object_type) related to the specified type of relation
     (relation_type) with an entity specified by its id (subject_id).
@@ -158,7 +151,7 @@ def relationship_relations_list(
 
 
 @validate(schema.relations_ids_list)
-def relationship_relations_ids_list(context: Context, data_dict: DataDict) -> list[str]:
+def relationship_relations_ids_list(context, data_dict) -> list[str]:
     """Return ids list of specified entity (object_entity, object_type) related
     with specified type of relation (relation_type) with entity specified
     by id (subject_id).
@@ -171,7 +164,7 @@ def relationship_relations_ids_list(context: Context, data_dict: DataDict) -> li
 
 
 @validate(schema.get_entity_list)
-def relationship_get_entity_list(context: Context, data_dict: DataDict) -> list[str]:
+def relationship_get_entity_list(context, data_dict) -> list[str]:
     """Return ids list of specified entity (entity, entity_type)"""
     tk.check_access("relationship_get_entity_list", context, data_dict)
 
@@ -191,7 +184,7 @@ def relationship_get_entity_list(context: Context, data_dict: DataDict) -> list[
 
 
 @validate(schema.autocomplete)
-def relationship_autocomplete(context: Context, data_dict: DataDict) -> DataDict:
+def relationship_autocomplete(context, data_dict) -> dict[str, Any]:
     fq = f'type:{data_dict["entity_type"]} -id:{data_dict["current_entity_id"]}'
 
     if data_dict.get("owned_only") and not (
@@ -229,15 +222,13 @@ def relationship_autocomplete(context: Context, data_dict: DataDict) -> DataDict
 
 @tk.chained_action
 @tk.side_effect_free
-def package_show(next_: Action, context: Context, data_dict: DataDict) -> DataDict:
+def package_show(next_, context, data_dict) -> dict[str, Any]:
     result = next_(context, data_dict)
 
     pkg_id = result["id"]
     pkg_type = result["type"]
 
-    views_without_relationships = tk.config[
-        "ckanext.relationship.views_without_relationships_in_package_show"
-    ]
+    views_without_relationships = views_without_relationships_in_package_show()
 
     if (
         tk.get_endpoint()[1] in views_without_relationships

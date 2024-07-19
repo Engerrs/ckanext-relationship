@@ -114,6 +114,19 @@ class RelationshipPlugin(plugins.SingletonPlugin):
 
         return pkg_dict
 
+    # CKAN < 2.10 hooks
+    def after_create(self, context, data_dict):
+        return self.after_dataset_create(context, data_dict)
+
+    def after_update(self, context, data_dict):
+        return self.after_dataset_update(context, data_dict)
+
+    def after_delete(self, context, data_dict):
+        return self.after_dataset_delete(context, data_dict)
+
+    def before_index(self, pkg_dict):
+        return self.before_dataset_index(pkg_dict)
+
 
 if tk.check_ckan_version("2.10"):
     tk.blanket.config_declarations(RelationshipPlugin)

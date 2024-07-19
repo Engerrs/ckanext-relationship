@@ -1,4 +1,4 @@
-[![Tests](https://github.com/DataShades/ckanext-relationship/workflows/Tests/badge.svg)](https://github.com/DataShades/ckanext-relationship/actions/workflows/test.yml)
+[![Tests](https://github.com/DataShades/ckanext-relationship/actions/workflows/test.yml/badge.svg)](https://github.com/DataShades/ckanext-relationship/actions/workflows/test.yml)
 
 # ckanext-relationship
 
@@ -44,12 +44,10 @@ If your extension works across different versions you can add the following tabl
 
 Compatibility with core CKAN versions:
 
-| CKAN version    | Compatible?   |
-| --------------- | ------------- |
-| 2.6 and earlier | not tested    |
-| 2.7             | not tested    |
-| 2.8             | not tested    |
-| 2.9             | not tested    |
+| CKAN version    | Compatible? |
+|-----------------|-------------|
+| 2.9             | yes         |
+| 2.10            | yes         |
 
 Suggested values:
 
