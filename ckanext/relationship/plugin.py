@@ -1,10 +1,10 @@
 import ckan.plugins.toolkit as tk
 from ckan import plugins
+from ckan.common import CKANConfig
 from ckan.lib.search import rebuild
 from ckan.logic import NotFound
 
 import ckanext.scheming.helpers as sch
-
 from ckanext.relationship import helpers, utils, views
 from ckanext.relationship.logic import action, auth, validators
 
@@ -19,7 +19,7 @@ class RelationshipPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IPackageController, inherit=True)
 
     # IConfigurer
-    def update_config(self, config_):
+    def update_config(self, config_: CKANConfig):
         tk.add_template_directory(config_, "templates")
         tk.add_public_directory(config_, "public")
         tk.add_resource("assets", "relationship")

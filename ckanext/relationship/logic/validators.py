@@ -39,8 +39,7 @@ def relationship_related_entity(field, schema):
         )
 
         selected_relations = get_selected_relations(data[key])
-
-        data[key] = json.dumps([value for value in selected_relations])
+        data[key] = json.dumps(list(selected_relations))
 
         add_relations = selected_relations - current_relations
         del_relations = current_relations - selected_relations
@@ -76,7 +75,7 @@ def get_current_relations(
     return set(current_relations)
 
 
-def get_selected_relations(selected_relations):
+def get_selected_relations(selected_relations: list | str | None) -> set[str]:
     if isinstance(selected_relations, string_types) and "," in selected_relations:
         selected_relations = selected_relations.split(",")
 

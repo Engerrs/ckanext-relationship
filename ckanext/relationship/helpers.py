@@ -19,7 +19,7 @@ def get_helpers():
 
 
 def relationship_get_entity_list(entity, entity_type, include_private=True):
-    """Return ids list of specified entity (entity, entity_type)"""
+    """Return ids list of specified entity (entity, entity_type)."""
     context = {}
     if entity == "package":
         entity_list = tk.get_action("package_search")(
@@ -87,7 +87,7 @@ def relationship_get_selected_json(selected_ids: list | None = None) -> str:
         try:
             pkg_dict = tk.get_action("package_show")({}, {"id": pkg_id})
             selected_pkgs.append({"name": pkg_dict["id"], "title": pkg_dict["title"]})
-        except Exception:
+        except (tk.ObjectNotFound, tk.NotAuthorized):
             continue
     return json.dumps(selected_pkgs)
 

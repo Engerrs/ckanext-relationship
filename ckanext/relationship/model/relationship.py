@@ -92,10 +92,7 @@ class Relationship(Base):
 
 
 def _entity_name_by_id(entity_id):
-    """
-    Returns entity (package or organization or group) name by its id
-    """
-
+    """Returns entity (package or organization or group) name by its id."""
     pkg = (
         model.Session.query(model.Package)
         .filter(model.Package.id == entity_id)

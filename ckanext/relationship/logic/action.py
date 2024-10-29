@@ -33,7 +33,8 @@ def get_actions():
 @validate(schema.relation_create)
 def relationship_relation_create(context, data_dict) -> list[dict[str, str]]:
     """Create relation with specified type (relation_type) between two entities
-    specified by ids (subject_id, object_id). Also create reverse relation."""
+    specified by ids (subject_id, object_id). Also create reverse relation.
+    """
     tk.check_access("relationship_relation_create", context, data_dict)
 
     subject_id = data_dict["subject_id"]
@@ -65,7 +66,8 @@ def relationship_relation_create(context, data_dict) -> list[dict[str, str]]:
 @validate(schema.relation_delete)
 def relationship_relation_delete(context, data_dict) -> list[dict[str, str]]:
     """Delete relation with specified type (relation_type) between two entities
-    specified by ids (subject_id, object_id). Also delete reverse relation."""
+    specified by ids (subject_id, object_id). Also delete reverse relation.
+    """
     tk.check_access("relationship_relation_delete", context, data_dict)
 
     subject_id = data_dict["subject_id"]
@@ -165,7 +167,7 @@ def relationship_relations_ids_list(context, data_dict) -> list[str]:
 
 @validate(schema.get_entity_list)
 def relationship_get_entity_list(context, data_dict) -> list[str]:
-    """Return ids list of specified entity (entity, entity_type)"""
+    """Return ids list of specified entity (entity, entity_type)."""
     tk.check_access("relationship_get_entity_list", context, data_dict)
 
     model = context["model"]

@@ -1,4 +1,4 @@
-"""Create relationship table
+"""Create relationship table.
 
 Revision ID: aca2ff1d3ce4
 Revises:
