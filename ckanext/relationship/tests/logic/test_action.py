@@ -94,6 +94,90 @@ class TestRelationCreate:
         assert relation_reverse.object_id == subject_id
         assert relation_reverse.relation_type == relation_type
 
+    def test_creation_by_name(self):
+        """We can create a relation by name instead of ID.
+
+        Should be revised in the future to avoid this kind of behavior.
+        """
+        subject_dataset = factories.Dataset()
+        object_dataset = factories.Dataset()
+
+        subject_id = subject_dataset["name"]
+        object_id = object_dataset["name"]
+        relation_type = "related_to"
+
+        result = call_action(
+            "relationship_relation_create",
+            {"ignore_auth": True},
+            subject_id=subject_id,
+            object_id=object_id,
+            relation_type=relation_type,
+        )
+
+        assert result[0]["subject_id"] == subject_id
+        assert result[0]["object_id"] == object_id
+        assert result[0]["relation_type"] == relation_type
+
+        assert result[1]["subject_id"] == object_id
+        assert result[1]["object_id"] == subject_id
+        assert result[1]["relation_type"] == relation_type
+
+    def test_get_by_id_relation_created_by_name(self):
+        """We can get a relation by ID if it was created by name."""
+        subject_dataset = factories.Dataset()
+        object_dataset = factories.Dataset()
+
+        subject_id = subject_dataset["id"]
+
+        subject_name = subject_dataset["name"]
+        object_name = object_dataset["name"]
+        relation_type = "related_to"
+
+        call_action(
+            "relationship_relation_create",
+            {"ignore_auth": True},
+            subject_id=subject_name,
+            object_id=object_name,
+            relation_type=relation_type,
+        )
+
+        result = call_action(
+            "relationship_relations_list",
+            {"ignore_auth": True},
+            subject_id=subject_id,
+        )
+
+        assert result[0]["subject_id"] == subject_name
+        assert result[0]["object_id"] == object_name
+        assert result[0]["relation_type"] == relation_type
+
+    def test_get_by_name_relation_created_by_id(self):
+        """We cannot get a relation by name if it was created by ID."""
+        subject_dataset = factories.Dataset()
+        object_dataset = factories.Dataset()
+
+        subject_id = subject_dataset["id"]
+        object_id = object_dataset["id"]
+
+        subject_name = subject_dataset["name"]
+        relation_type = "related_to"
+
+        call_action(
+            "relationship_relation_create",
+            {"ignore_auth": True},
+            subject_id=subject_id,
+            object_id=object_id,
+            relation_type=relation_type,
+        )
+
+        result = call_action(
+            "relationship_relations_list",
+            {"ignore_auth": True},
+            subject_id=subject_name,
+        )
+
+        assert result == []
+
     @pytest.mark.parametrize(
         "relation_type",
         [
