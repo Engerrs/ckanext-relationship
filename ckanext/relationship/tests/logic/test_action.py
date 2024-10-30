@@ -57,7 +57,7 @@ class TestRelationCreate:
             relation_type=relation_type,
         )
 
-        assert result is None
+        assert result == []
 
     def test_relation_is_added_to_db(self):
         subject_dataset = factories.Dataset()
