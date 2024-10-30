@@ -18,7 +18,9 @@ def get_helpers():
     return {f.__name__: f for f in helper_functions}
 
 
-def relationship_get_entity_list(entity, entity_type, include_private=True):
+def relationship_get_entity_list(
+    entity: str, entity_type: str, include_private: bool = True
+) -> list[dict[str, str]]:
     """Return ids list of specified entity (entity, entity_type)."""
     context = {}
     if entity == "package":
@@ -42,7 +44,9 @@ def relationship_get_entity_list(entity, entity_type, include_private=True):
     return entity_list
 
 
-def relationship_get_current_relations_list(data, field) -> list[str]:
+def relationship_get_current_relations_list(
+    data: dict[str, Any], field: dict[str, Any]
+) -> list[str]:
     """Pull existing relations for form_snippet and display_snippet."""
     subject_id = field.get("id")
     subject_name = field.get("name")

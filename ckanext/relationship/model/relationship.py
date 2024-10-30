@@ -42,7 +42,7 @@ class Relationship(Base):
         }
 
     @classmethod
-    def by_object_id(cls, subject_id, object_id, relation_type):
+    def by_object_id(cls, subject_id: str, object_id: str, relation_type: str):
         subject_name = _entity_name_by_id(subject_id)
         object_name = _entity_name_by_id(object_id)
 
@@ -61,11 +61,7 @@ class Relationship(Base):
 
     @classmethod
     def by_subject_id(
-        cls,
-        subject_id,
-        object_entity,
-        object_type=None,
-        relation_type=None,
+        cls, subject_id: str, object_entity: str, object_type: str, relation_type: str
     ):
         subject_name = _entity_name_by_id(subject_id)
 
@@ -91,7 +87,7 @@ class Relationship(Base):
         return q.distinct().all()
 
 
-def _entity_name_by_id(entity_id):
+def _entity_name_by_id(entity_id: str):
     """Returns entity (package or organization or group) name by its id."""
     pkg = (
         model.Session.query(model.Package)

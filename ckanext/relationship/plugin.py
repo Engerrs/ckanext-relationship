@@ -1,22 +1,29 @@
+from __future__ import annotations
+
+import contextlib
+from typing import Any
+
 import ckan.plugins.toolkit as tk
-from ckan import plugins
+from ckan import plugins as p
 from ckan.common import CKANConfig
 from ckan.lib.search import rebuild
 from ckan.logic import NotFound
+from ckan.types import Context
 
 import ckanext.scheming.helpers as sch
+
 from ckanext.relationship import helpers, utils, views
 from ckanext.relationship.logic import action, auth, validators
 
 
-class RelationshipPlugin(plugins.SingletonPlugin):
-    plugins.implements(plugins.IConfigurer)
-    plugins.implements(plugins.IActions)
-    plugins.implements(plugins.IAuthFunctions)
-    plugins.implements(plugins.IValidators)
-    plugins.implements(plugins.ITemplateHelpers)
-    plugins.implements(plugins.IBlueprint)
-    plugins.implements(plugins.IPackageController, inherit=True)
+class RelationshipPlugin(p.SingletonPlugin):
+    p.implements(p.IConfigurer)
+    p.implements(p.IActions)
+    p.implements(p.IAuthFunctions)
+    p.implements(p.IValidators)
+    p.implements(p.ITemplateHelpers)
+    p.implements(p.IBlueprint)
+    p.implements(p.IPackageController, inherit=True)
 
     # IConfigurer
     def update_config(self, config_: CKANConfig):
@@ -45,17 +52,17 @@ class RelationshipPlugin(plugins.SingletonPlugin):
         return views.get_blueprints()
 
     # IPackageController
-    def after_dataset_create(self, context, pkg_dict):
+    def after_dataset_create(self, context: Context, pkg_dict: dict[str, Any]):
         context = context.copy()
         context.pop("__auth_audit", None)
         return _update_relations(context, pkg_dict)
 
-    def after_dataset_update(self, context, pkg_dict):
+    def after_dataset_update(self, context: Context, pkg_dict: dict[str, Any]):
         context = context.copy()
         context.pop("__auth_audit", None)
         return _update_relations(context, pkg_dict)
 
-    def after_dataset_delete(self, context, pkg_dict):
+    def after_dataset_delete(self, context: Context, pkg_dict: dict[str, Any]):
         context = context.copy()
         context.pop("__auth_audit", None)
 
@@ -72,13 +79,11 @@ class RelationshipPlugin(plugins.SingletonPlugin):
                 {"subject_id": subject_id, "object_id": object_id},
             )
 
-            try:
+            with contextlib.suppress(NotFound):
                 rebuild(object_id)
-            except NotFound:
-                pass
         rebuild(subject_id)
 
-    def before_dataset_index(self, pkg_dict):
+    def before_dataset_index(self, pkg_dict: dict[str, Any]):
         pkg_id = pkg_dict["id"]
         pkg_type = pkg_dict["type"]
         schema = sch.scheming_get_schema("dataset", pkg_type)
@@ -115,16 +120,16 @@ class RelationshipPlugin(plugins.SingletonPlugin):
         return pkg_dict
 
     # CKAN < 2.10 hooks
-    def after_create(self, context, data_dict):
+    def after_create(self, context: Context, data_dict: dict[str, Any]):
         return self.after_dataset_create(context, data_dict)
 
-    def after_update(self, context, data_dict):
+    def after_update(self, context: Context, data_dict: dict[str, Any]):
         return self.after_dataset_update(context, data_dict)
 
-    def after_delete(self, context, data_dict):
+    def after_delete(self, context: Context, data_dict: dict[str, Any]):
         return self.after_dataset_delete(context, data_dict)
 
-    def before_index(self, pkg_dict):
+    def before_index(self, pkg_dict: dict[str, Any]):
         return self.before_dataset_index(pkg_dict)
 
 
@@ -132,7 +137,7 @@ if tk.check_ckan_version("2.10"):
     tk.blanket.config_declarations(RelationshipPlugin)
 
 
-def _update_relations(context, pkg_dict):
+def _update_relations(context: Context, pkg_dict: dict[str, Any]):
     subject_id = pkg_dict["id"]
     add_relations = pkg_dict.get("add_relations", [])
     del_relations = pkg_dict.get("del_relations", [])
@@ -158,9 +163,7 @@ def _update_relations(context, pkg_dict):
                 },
             )
 
-        try:
+        with contextlib.suppress(NotFound):
             rebuild(object_id)
-        except NotFound:
-            pass
     rebuild(subject_id)
     return pkg_dict

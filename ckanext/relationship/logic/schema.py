@@ -1,8 +1,9 @@
 from ckan.logic.schema import validator_args
+from ckan.types import Schema, Validator
 
 
 @validator_args
-def relation_create(not_empty, one_of):
+def relation_create(not_empty: Validator, one_of: Validator) -> Schema:
     return {
         "subject_id": [
             not_empty,
@@ -17,7 +18,9 @@ def relation_create(not_empty, one_of):
 
 
 @validator_args
-def relation_delete(not_empty, one_of, ignore_missing):
+def relation_delete(
+    not_empty: Validator, one_of: Validator, ignore_missing: Validator
+) -> Schema:
     return {
         "subject_id": [
             not_empty,
@@ -33,7 +36,9 @@ def relation_delete(not_empty, one_of, ignore_missing):
 
 
 @validator_args
-def relations_list(not_empty, one_of, ignore_missing):
+def relations_list(
+    not_empty: Validator, one_of: Validator, ignore_missing: Validator
+) -> Schema:
     return {
         "subject_id": [
             not_empty,
@@ -53,7 +58,9 @@ def relations_list(not_empty, one_of, ignore_missing):
 
 
 @validator_args
-def relations_ids_list(not_empty, one_of, ignore_missing):
+def relations_ids_list(
+    not_empty: Validator, one_of: Validator, ignore_missing: Validator
+) -> Schema:
     return {
         "subject_id": [
             not_empty,
@@ -73,7 +80,7 @@ def relations_ids_list(not_empty, one_of, ignore_missing):
 
 
 @validator_args
-def get_entity_list(not_empty, one_of):
+def get_entity_list(not_empty: Validator, one_of: Validator) -> Schema:
     return {
         "entity": [
             not_empty,
@@ -86,7 +93,7 @@ def get_entity_list(not_empty, one_of):
 
 
 @validator_args
-def autocomplete(not_empty):
+def autocomplete(not_empty: Validator) -> Schema:
     return {
         "incomplete": [],
         "current_entity_id": [

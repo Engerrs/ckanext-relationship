@@ -2,6 +2,7 @@ import pytest
 
 import ckan.plugins.toolkit as tk
 from ckan.tests import factories
+from ckan.tests.helpers import call_action
 
 from ckanext.relationship.model.relationship import Relationship
 
@@ -16,13 +17,12 @@ class TestRelationCreate:
         object_id = object_dataset["id"]
         relation_type = "related_to"
 
-        result = tk.get_action("relationship_relation_create")(
+        result = call_action(
+            "relationship_relation_create",
             {"ignore_auth": True},
-            {
-                "subject_id": subject_id,
-                "object_id": object_id,
-                "relation_type": relation_type,
-            },
+            subject_id=subject_id,
+            object_id=object_id,
+            relation_type=relation_type,
         )
 
         assert result[0]["subject_id"] == subject_id
@@ -41,22 +41,20 @@ class TestRelationCreate:
         object_id = object_dataset["id"]
         relation_type = "related_to"
 
-        tk.get_action("relationship_relation_create")(
+        call_action(
+            "relationship_relation_create",
             {"ignore_auth": True},
-            {
-                "subject_id": subject_id,
-                "object_id": object_id,
-                "relation_type": relation_type,
-            },
+            subject_id=subject_id,
+            object_id=object_id,
+            relation_type=relation_type,
         )
 
-        result = tk.get_action("relationship_relation_create")(
+        result = call_action(
+            "relationship_relation_create",
             {"ignore_auth": True},
-            {
-                "subject_id": subject_id,
-                "object_id": object_id,
-                "relation_type": relation_type,
-            },
+            subject_id=subject_id,
+            object_id=object_id,
+            relation_type=relation_type,
         )
 
         assert result is None
@@ -69,13 +67,12 @@ class TestRelationCreate:
         object_id = object_dataset["id"]
         relation_type = "related_to"
 
-        tk.get_action("relationship_relation_create")(
+        call_action(
+            "relationship_relation_create",
             {"ignore_auth": True},
-            {
-                "subject_id": subject_id,
-                "object_id": object_id,
-                "relation_type": relation_type,
-            },
+            subject_id=subject_id,
+            object_id=object_id,
+            relation_type=relation_type,
         )
 
         relation_straight = Relationship.by_object_id(
@@ -105,20 +102,19 @@ class TestRelationCreate:
             "child_of",
         ],
     )
-    def test_different_relation_types(self, relation_type):
+    def test_different_relation_types(self, relation_type: str):
         subject_dataset = factories.Dataset()
         object_dataset = factories.Dataset()
 
         subject_id = subject_dataset["id"]
         object_id = object_dataset["id"]
 
-        result = tk.get_action("relationship_relation_create")(
+        result = call_action(
+            "relationship_relation_create",
             {"ignore_auth": True},
-            {
-                "subject_id": subject_id,
-                "object_id": object_id,
-                "relation_type": relation_type,
-            },
+            subject_id=subject_id,
+            object_id=object_id,
+            relation_type=relation_type,
         )
 
         assert result[0]["relation_type"] == relation_type
@@ -126,6 +122,45 @@ class TestRelationCreate:
             result[1]["relation_type"]
             == Relationship.reverse_relation_type[relation_type]
         )
+
+    def test_no_subject_id(self):
+        object_dataset = factories.Dataset()
+
+        object_id = object_dataset["id"]
+
+        with pytest.raises(tk.ValidationError):
+            call_action(
+                "relationship_relation_create",
+                {"ignore_auth": True},
+                object_id=object_id,
+            )
+
+    def test_no_object_id(self):
+        subject_dataset = factories.Dataset()
+
+        subject_id = subject_dataset["id"]
+
+        with pytest.raises(tk.ValidationError):
+            call_action(
+                "relationship_relation_create",
+                {"ignore_auth": True},
+                subject_id=subject_id,
+            )
+
+    def test_no_relation_type(self):
+        subject_dataset = factories.Dataset()
+        object_dataset = factories.Dataset()
+
+        subject_id = subject_dataset["id"]
+        object_id = object_dataset["id"]
+
+        with pytest.raises(tk.ValidationError):
+            call_action(
+                "relationship_relation_create",
+                {"ignore_auth": True},
+                subject_id=subject_id,
+                object_id=object_id,
+            )
 
 
 @pytest.mark.usefixtures("clean_db")
@@ -138,22 +173,20 @@ class TestRelationDelete:
         object_id = object_dataset["id"]
         relation_type = "related_to"
 
-        tk.get_action("relationship_relation_create")(
+        call_action(
+            "relationship_relation_create",
             {"ignore_auth": True},
-            {
-                "subject_id": subject_id,
-                "object_id": object_id,
-                "relation_type": relation_type,
-            },
+            subject_id=subject_id,
+            object_id=object_id,
+            relation_type=relation_type,
         )
 
-        result = tk.get_action("relationship_relation_delete")(
+        result = call_action(
+            "relationship_relation_delete",
             {"ignore_auth": True},
-            {
-                "subject_id": subject_id,
-                "object_id": object_id,
-                "relation_type": relation_type,
-            },
+            subject_id=subject_id,
+            object_id=object_id,
+            relation_type=relation_type,
         )
 
         assert result[0]["subject_id"] == subject_id
@@ -172,22 +205,20 @@ class TestRelationDelete:
         object_id = object_dataset["id"]
         relation_type = "related_to"
 
-        tk.get_action("relationship_relation_create")(
+        call_action(
+            "relationship_relation_create",
             {"ignore_auth": True},
-            {
-                "subject_id": subject_id,
-                "object_id": object_id,
-                "relation_type": relation_type,
-            },
+            subject_id=subject_id,
+            object_id=object_id,
+            relation_type=relation_type,
         )
 
-        tk.get_action("relationship_relation_delete")(
+        call_action(
+            "relationship_relation_delete",
             {"ignore_auth": True},
-            {
-                "subject_id": subject_id,
-                "object_id": object_id,
-                "relation_type": relation_type,
-            },
+            subject_id=subject_id,
+            object_id=object_id,
+            relation_type=relation_type,
         )
 
         relation_straight = Relationship.by_object_id(
@@ -212,16 +243,15 @@ class TestRelationDelete:
         object_id = object_dataset["id"]
         relation_type = "related_to"
 
-        tk.get_action("relationship_relation_create")(
+        call_action(
+            "relationship_relation_create",
             {"ignore_auth": True},
-            {
-                "subject_id": subject_id,
-                "object_id": object_id,
-                "relation_type": relation_type,
-            },
+            subject_id=subject_id,
+            object_id=object_id,
+            relation_type=relation_type,
         )
 
-        tk.get_action("package_delete")({"ignore_auth": True}, {"id": subject_id})
+        call_action("package_delete", {"ignore_auth": True}, id=subject_id)
 
         relation_straight = Relationship.by_object_id(
             subject_id,
@@ -263,8 +293,8 @@ class TestRelationList:
         self,
         subject_factory,
         object_factory,
-        object_entity,
-        object_type,
+        object_entity: str,
+        object_type: str,
     ):
         subject = subject_factory()
         object = object_factory()
@@ -273,23 +303,21 @@ class TestRelationList:
         object_id = object["id"]
         relation_type = "related_to"
 
-        tk.get_action("relationship_relation_create")(
+        call_action(
+            "relationship_relation_create",
             {"ignore_auth": True},
-            {
-                "subject_id": subject_id,
-                "object_id": object_id,
-                "relation_type": relation_type,
-            },
+            subject_id=subject_id,
+            object_id=object_id,
+            relation_type=relation_type,
         )
 
-        result = tk.get_action("relationship_relations_list")(
+        result = call_action(
+            "relationship_relations_list",
             {"ignore_auth": True},
-            {
-                "subject_id": subject_id,
-                "object_entity": object_entity,
-                "object_type": object_type,
-                "relation_type": relation_type,
-            },
+            subject_id=subject_id,
+            object_entity=object_entity,
+            object_type=object_type,
+            relation_type=relation_type,
         )
 
         assert result[0]["subject_id"] == subject_id
@@ -302,14 +330,13 @@ class TestRelationList:
         subject_id = subject_dataset["id"]
         relation_type = "related_to"
 
-        result = tk.get_action("relationship_relations_list")(
+        result = call_action(
+            "relationship_relations_list",
             {"ignore_auth": True},
-            {
-                "subject_id": subject_id,
-                "object_entity": "package",
-                "object_type": "dataset",
-                "relation_type": relation_type,
-            },
+            subject_id=subject_id,
+            object_entity="package",
+            object_type="dataset",
+            relation_type=relation_type,
         )
 
         assert result == []
@@ -322,25 +349,23 @@ class TestRelationList:
         object_id = object_dataset["id"]
         relation_type = "related_to"
 
-        tk.get_action("relationship_relation_create")(
+        call_action(
+            "relationship_relation_create",
             {"ignore_auth": True},
-            {
-                "subject_id": subject_id,
-                "object_id": object_id,
-                "relation_type": relation_type,
-            },
+            subject_id=subject_id,
+            object_id=object_id,
+            relation_type=relation_type,
         )
 
-        tk.get_action("package_delete")({"ignore_auth": True}, {"id": subject_id})
+        call_action("package_delete", {"ignore_auth": True}, id=subject_id)
 
-        result = tk.get_action("relationship_relations_list")(
+        result = call_action(
+            "relationship_relations_list",
             {"ignore_auth": True},
-            {
-                "subject_id": subject_id,
-                "object_entity": "package",
-                "object_type": "dataset",
-                "relation_type": relation_type,
-            },
+            subject_id=subject_id,
+            object_entity="package",
+            object_type="dataset",
+            relation_type=relation_type,
         )
 
         assert result == []
@@ -358,32 +383,29 @@ class TestRelationsIdsList:
         object2_id = object2_dataset["id"]
         relation_type = "related_to"
 
-        tk.get_action("relationship_relation_create")(
+        call_action(
+            "relationship_relation_create",
             {"ignore_auth": True},
-            {
-                "subject_id": subject_id,
-                "object_id": object1_id,
-                "relation_type": relation_type,
-            },
+            subject_id=subject_id,
+            object_id=object1_id,
+            relation_type=relation_type,
         )
 
-        tk.get_action("relationship_relation_create")(
+        call_action(
+            "relationship_relation_create",
             {"ignore_auth": True},
-            {
-                "subject_id": subject_id,
-                "object_id": object2_id,
-                "relation_type": relation_type,
-            },
+            subject_id=subject_id,
+            object_id=object2_id,
+            relation_type=relation_type,
         )
 
-        result = tk.get_action("relationship_relations_ids_list")(
+        result = call_action(
+            "relationship_relations_ids_list",
             {"ignore_auth": True},
-            {
-                "subject_id": subject_id,
-                "object_entity": "package",
-                "object_type": "dataset",
-                "relation_type": relation_type,
-            },
+            subject_id=subject_id,
+            object_entity="package",
+            object_type="dataset",
+            relation_type=relation_type,
         )
 
         assert object1_id in result
@@ -399,21 +421,16 @@ def test_keep_relation_after_dataset_patch():
     object_id = object_dataset["id"]
     relation_type = "related_to"
 
-    tk.get_action("relationship_relation_create")(
+    call_action(
+        "relationship_relation_create",
         {"ignore_auth": True},
-        {
-            "subject_id": subject_id,
-            "object_id": object_id,
-            "relation_type": relation_type,
-        },
+        subject_id=subject_id,
+        object_id=object_id,
+        relation_type=relation_type,
     )
 
-    tk.get_action("package_patch")(
-        {"ignore_auth": True},
-        {
-            "id": subject_id,
-            "title": "New title",
-        },
+    call_action(
+        "package_patch", {"ignore_auth": True}, id=subject_id, title="New title"
     )
 
     relation_straight = Relationship.by_object_id(
