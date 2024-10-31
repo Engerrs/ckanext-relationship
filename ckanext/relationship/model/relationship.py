@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from sqlalchemy import Column, Text, or_
+from datetime import datetime
+
+from sqlalchemy import Column, DateTime, Text, or_
+from sqlalchemy.dialects.postgresql import JSONB
 
 from ckan import logic, model
 from ckan.model.types import make_uuid
@@ -14,6 +17,8 @@ class Relationship(Base):
     subject_id: str = Column(Text, nullable=False)
     object_id: str = Column(Text, nullable=False)
     relation_type: str = Column(Text, nullable=False)
+    created_at: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
+    extras: dict = Column(JSONB, nullable=False, default=dict)
 
     reverse_relation_type = {
         "related_to": "related_to",
@@ -27,7 +32,9 @@ class Relationship(Base):
             f"id={self.id!r}, "
             f"subject_id={self.subject_id!r}, "
             f"object_id={self.object_id!r}, "
-            f"relation_type={self.relation_type!r})"
+            f"relation_type={self.relation_type!r}, "
+            f"created_at={self.created_at!r}, "
+            f"extras={self.extras!r})"
         )
 
     def as_dict(self):
@@ -36,6 +43,8 @@ class Relationship(Base):
             "subject_id": self.subject_id,
             "object_id": self.object_id,
             "relation_type": self.relation_type,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "extras": self.extras,
         }
 
     @classmethod

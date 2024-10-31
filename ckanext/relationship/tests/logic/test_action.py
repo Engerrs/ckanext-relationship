@@ -246,6 +246,46 @@ class TestRelationCreate:
                 object_id=object_id,
             )
 
+    def test_created_at(self):
+        subject_dataset = factories.Dataset()
+        object_dataset = factories.Dataset()
+
+        subject_id = subject_dataset["id"]
+        object_id = object_dataset["id"]
+        relation_type = "related_to"
+
+        result = call_action(
+            "relationship_relation_create",
+            {"ignore_auth": True},
+            subject_id=subject_id,
+            object_id=object_id,
+            relation_type=relation_type,
+        )
+
+        assert "created_at" in result[0]
+        assert "created_at" in result[1]
+
+    def test_extras(self):
+        subject_dataset = factories.Dataset()
+        object_dataset = factories.Dataset()
+
+        subject_id = subject_dataset["id"]
+        object_id = object_dataset["id"]
+        relation_type = "related_to"
+        extras = {"key": "value"}
+
+        result = call_action(
+            "relationship_relation_create",
+            {"ignore_auth": True},
+            subject_id=subject_id,
+            object_id=object_id,
+            relation_type=relation_type,
+            extras=extras,
+        )
+
+        assert result[0]["extras"] == extras
+        assert result[1]["extras"] == extras
+
 
 @pytest.mark.usefixtures("clean_db")
 class TestRelationDelete:

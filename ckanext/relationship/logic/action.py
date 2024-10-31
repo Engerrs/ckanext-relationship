@@ -44,6 +44,7 @@ def relationship_relation_create(
     subject_id = data_dict["subject_id"]
     object_id = data_dict["object_id"]
     relation_type = data_dict.get("relation_type")
+    extras = data_dict.get("extras", {})
 
     if Relationship.by_object_id(subject_id, object_id, relation_type):
         return []
@@ -52,12 +53,14 @@ def relationship_relation_create(
         subject_id=subject_id,
         object_id=object_id,
         relation_type=relation_type,
+        extras=extras,
     )
 
     reverse_relation = Relationship(
         subject_id=object_id,
         object_id=subject_id,
         relation_type=Relationship.reverse_relation_type[relation_type],
+        extras=extras,
     )
 
     context["session"].add(relation)

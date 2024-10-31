@@ -1,9 +1,15 @@
 from ckan.logic.schema import validator_args
-from ckan.types import Schema, Validator
+from ckan.types import Schema, Validator, ValidatorFactory
 
 
 @validator_args
-def relation_create(not_empty: Validator, one_of: Validator) -> Schema:
+def relation_create(
+    not_empty: Validator,
+    one_of: Validator,
+    default: ValidatorFactory,
+    convert_to_json_if_string: Validator,
+    dict_only: Validator,
+) -> Schema:
     return {
         "subject_id": [
             not_empty,
@@ -14,6 +20,7 @@ def relation_create(not_empty: Validator, one_of: Validator) -> Schema:
         "relation_type": [
             one_of(["related_to", "child_of", "parent_of"]),
         ],
+        "extras": [default("{}"), convert_to_json_if_string, dict_only],
     }
 
 

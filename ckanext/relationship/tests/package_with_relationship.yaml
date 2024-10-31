@@ -1,14 +1,28 @@
 scheming_version: 1
-dataset_type: package_with_relationship
+dataset_type: package-with-relationship
 about_url: http://github.com/ckan/ckanext-relationship
 
 dataset_fields:
+  - field_name: title
+    label: Title
+    preset: title
+
+  - field_name: name
+    label: URL
+    preset: dataset_slug
+
+  - field_name: owner_org
+    label: Organization
+    preset: dataset_organization
+
   - field_name: related_packages
+    preset: related_entity
+    label: Related Packages
     validators: relationship_related_entity
     current_entity: package
-    current_entity_type: package_with_relationship
+    current_entity_type: package-with-relationship
     related_entity: package
-    related_entity_type: package_with_relationship
+    related_entity_type: package-with-relationship
     relation_type: related_to
 
 resource_fields:
