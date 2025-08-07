@@ -91,7 +91,7 @@ def relationship_get_selected_json(selected_ids: list[str] | None = None) -> str
     search = tk.get_action("package_search")
     rows = 100
     start = 0
-    fq = "fq:({})".format(" OR ".join(map(solr_literal, selected_ids)))
+    fq = "id:({})".format(" OR ".join(map(solr_literal, selected_ids)))
     while True:
         result = search(
             {},
