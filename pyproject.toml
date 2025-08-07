@@ -138,6 +138,9 @@ convention = "conventional"
 parse-trailers = true
 
 [tool.pyright]
+extraPaths = [
+           "../ckan",
+]
 pythonVersion = "3.8"
 include = ["ckanext"]
 exclude = [
@@ -209,6 +212,8 @@ reportUnsupportedDunderAll = true
 reportUnusedCoroutine = true
 reportUnnecessaryTypeIgnoreComment = true
 reportMatchNotExhaustive = true
+reportExplicitAny = false
+reportAny = false
 
 [tool.coverage.run]
 branch = true

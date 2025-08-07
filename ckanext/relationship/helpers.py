@@ -5,6 +5,7 @@ from typing import Any
 
 import ckan.plugins.toolkit as tk
 from ckan import authz
+from ckan.lib.search.query import solr_literal
 
 
 def get_helpers():
@@ -82,17 +83,37 @@ def relationship_get_current_relations_list(
     return current_relation_by_id + current_relation_by_name
 
 
-def relationship_get_selected_json(selected_ids: list | None = None) -> str:
+def relationship_get_selected_json(selected_ids: list[str] | None = None) -> str:
     if not selected_ids:
         return json.dumps([])
 
     selected_pkgs = []
-    for pkg_id in selected_ids:
-        try:
-            pkg_dict = tk.get_action("package_show")({}, {"id": pkg_id})
-            selected_pkgs.append({"name": pkg_dict["id"], "title": pkg_dict["title"]})
-        except (tk.ObjectNotFound, tk.NotAuthorized):
-            continue
+    search = tk.get_action("package_search")
+    rows = 100
+    start = 0
+    fq = "fq:({})".format(" OR ".join(map(solr_literal, selected_ids)))
+    while True:
+        result = search(
+            {},
+            {
+                "include_private": True,
+                "fq": fq,
+                "rows": rows,
+                "start": start,
+                "fl": "name,title",
+            },
+        )
+        selected_pkgs.extend(
+            [
+                {"name": pkg_dict["id"], "title": pkg_dict["title"]}
+                for pkg_dict in result["results"]
+            ]
+        )
+
+        if not result["results"]:
+            break
+        start += rows
+
     return json.dumps(selected_pkgs)
 
 
