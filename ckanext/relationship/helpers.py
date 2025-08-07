@@ -100,7 +100,7 @@ def relationship_get_selected_json(selected_ids: list[str] | None = None) -> str
                 "fq": fq,
                 "rows": rows,
                 "start": start,
-                "fl": "name,title",
+                "fl": "id,name,title",
             },
         )
         selected_pkgs.extend(
