@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+from typing import Any
+from typing_extensions import override
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, Text, or_
+import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.orm import Mapped
 
 from ckan import logic, model
 from ckan.model.types import make_uuid
@@ -12,20 +15,31 @@ from .base import Base
 
 
 class Relationship(Base):
-    __tablename__ = "relationship_relationship"
-    id: str = Column(Text, primary_key=True, default=make_uuid)
-    subject_id: str = Column(Text, nullable=False)
-    object_id: str = Column(Text, nullable=False)
-    relation_type: str = Column(Text, nullable=False)
-    created_at: datetime = Column(DateTime, nullable=False, default=datetime.utcnow)
-    extras: dict = Column(JSONB, nullable=False, default=dict)
+    __table__: sa.Table = sa.Table(
+        "relationship_relationship",
+        Base.metadata,
+        sa.Column("id", sa.Text, primary_key=True, default=make_uuid),
+        sa.Column("subject_id", sa.Text, nullable=False),
+        sa.Column("object_id", sa.Text, nullable=False),
+        sa.Column("relation_type", sa.Text, nullable=False),
+        sa.Column("created_at", sa.DateTime, nullable=False, default=datetime.utcnow),  # pyright: ignore[reportDeprecated]
+        sa.Column("extras", JSONB, nullable=False, default=dict),
+    )
 
-    reverse_relation_type = {
+    id: Mapped[str]
+    subject_id: Mapped[str]
+    object_id: Mapped[str]
+    relation_type: Mapped[str]
+    created_at: Mapped[datetime]
+    extras: Mapped[dict[str, Any]]
+
+    reverse_relation_type: dict[str, Any] = {
         "related_to": "related_to",
         "child_of": "parent_of",
         "parent_of": "child_of",
     }
 
+    @override
     def __repr__(self):
         return (
             "Relationship("
@@ -90,7 +104,7 @@ class Relationship(Base):
             object_class = logic.model_name_to_class(model, object_entity)
             q = q.join(
                 object_class,
-                or_(
+                sa.or_(
                     cls.object_id == object_class.id,
                     cls.object_id == object_class.name,
                 ),

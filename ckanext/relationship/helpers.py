@@ -23,10 +23,10 @@ def relationship_get_entity_list(
     entity: str, entity_type: str, include_private: bool = True
 ) -> list[dict[str, str]]:
     """Return ids list of specified entity (entity, entity_type)."""
-    context = {}
+
     if entity == "package":
         entity_list = tk.get_action("package_search")(
-            context,
+            {},
             {
                 "fq": f"type:{entity_type}",
                 "rows": 1000,
@@ -36,7 +36,7 @@ def relationship_get_entity_list(
         entity_list = entity_list["results"]
     else:
         entity_list = tk.get_action("relationship_get_entity_list")(
-            context,
+            {},
             {"entity": entity, "entity_type": entity_type},
         )
         entity_list = [
@@ -57,8 +57,8 @@ def relationship_get_current_relations_list(
     related_entity_type = data["related_entity_type"]
     relation_type = data["relation_type"]
 
-    current_relation_by_id = []
-    current_relation_by_name = []
+    current_relation_by_id: list[str] = []
+    current_relation_by_name: list[str] = []
 
     if subject_id:
         current_relation_by_id = tk.get_action("relationship_relations_ids_list")(
@@ -120,13 +120,13 @@ def relationship_get_selected_json(selected_ids: list[str] | None = None) -> str
 def relationship_get_choices_for_related_entity_field(
     field: dict[str, Any],
     current_entity_id: str | None,
-) -> list[str | None]:
+) -> list[tuple[str, str | None]]:
     entities = relationship_get_entity_list(
         field["related_entity"],
         field["related_entity_type"],
     )
 
-    choices = []
+    choices: list[tuple[str, str | None]] = []
 
     for entity in entities:
         if entity["id"] == current_entity_id:
@@ -148,11 +148,11 @@ def relationship_get_choices_for_related_entity_field(
 
         choices.append((entity["id"], entity.get("title") or entity.get("name")))
 
-    choices.sort(key=lambda x: x[1])
+    choices.sort(key=lambda x: x[1])  # pyright: ignore[reportArgumentType, reportCallIssue]
     return choices
 
 
-def relationship_format_autocomplete(packages: dict[str, Any]) -> dict[str, Any]:
+def relationship_format_autocomplete(packages: list[dict[str, Any]]) -> dict[str, Any]:
     return {
         "ResultSet": {
             "Result": [

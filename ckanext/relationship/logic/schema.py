@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from ckan.logic.schema import validator_args
 from ckan.types import Schema, Validator, ValidatorFactory
 
@@ -5,7 +7,7 @@ from ckan.types import Schema, Validator, ValidatorFactory
 @validator_args
 def relation_create(
     not_empty: Validator,
-    one_of: Validator,
+    one_of: ValidatorFactory,
     default: ValidatorFactory,
     convert_to_json_if_string: Validator,
     dict_only: Validator,
@@ -26,7 +28,7 @@ def relation_create(
 
 @validator_args
 def relation_delete(
-    not_empty: Validator, one_of: Validator, ignore_missing: Validator
+    not_empty: Validator, one_of: ValidatorFactory, ignore_missing: Validator
 ) -> Schema:
     return {
         "subject_id": [
@@ -44,7 +46,7 @@ def relation_delete(
 
 @validator_args
 def relations_list(
-    not_empty: Validator, one_of: Validator, ignore_missing: Validator
+    not_empty: Validator, one_of: ValidatorFactory, ignore_missing: Validator
 ) -> Schema:
     return {
         "subject_id": [
@@ -66,7 +68,7 @@ def relations_list(
 
 @validator_args
 def relations_ids_list(
-    not_empty: Validator, one_of: Validator, ignore_missing: Validator
+    not_empty: Validator, one_of: ValidatorFactory, ignore_missing: Validator
 ) -> Schema:
     return {
         "subject_id": [
@@ -87,7 +89,7 @@ def relations_ids_list(
 
 
 @validator_args
-def get_entity_list(not_empty: Validator, one_of: Validator) -> Schema:
+def get_entity_list(not_empty: Validator, one_of: ValidatorFactory) -> Schema:
     return {
         "entity": [
             not_empty,

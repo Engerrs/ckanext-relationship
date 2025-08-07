@@ -1,16 +1,14 @@
 from __future__ import annotations
 
 import json
-from typing import Any
-
-from six import string_types
+from typing import Any, cast
 
 import ckan.plugins.toolkit as tk
 from ckan.types import Context, FlattenDataDict, FlattenErrorDict, FlattenKey
 
 from ckanext.scheming.validation import (
-    scheming_multiple_choice_output,
-    scheming_validator,
+    scheming_multiple_choice_output,  # pyright: ignore[reportUnknownVariableType]
+    scheming_validator,  # pyright: ignore[reportUnknownVariableType]
 )
 
 
@@ -61,9 +59,9 @@ def relationship_related_entity(field: dict[str, Any], schema: dict[str, Any]):
 
 def get_current_relations(
     entity_id: str | None,
-    related_entity: str,
-    related_entity_type: str,
-    relation_type: str,
+    related_entity: str | None,
+    related_entity_type: str | None,
+    relation_type: str | None,
 ):
     if entity_id:
         current_relations = tk.get_action("relationship_relations_list")(
@@ -81,19 +79,24 @@ def get_current_relations(
     return set(current_relations)
 
 
-def get_selected_relations(selected_relations: list | str | None) -> set[str]:
-    if isinstance(selected_relations, string_types) and "," in selected_relations:
+def get_selected_relations(selected_relations: list[Any] | str | None) -> set[str]:
+    if selected_relations is None:
+        selected_relations = []
+
+    if isinstance(selected_relations, str) and "," in selected_relations:
         selected_relations = selected_relations.split(",")
 
     if (
         len(selected_relations) == 1
-        and isinstance(selected_relations[0], string_types)
+        and isinstance(selected_relations[0], str)
         and "," in selected_relations[0]
     ):
         selected_relations = selected_relations[0].split(",")
 
     if selected_relations is not tk.missing:
-        selected_relations = scheming_multiple_choice_output(selected_relations)
+        selected_relations = cast(
+            "list[str]", scheming_multiple_choice_output(selected_relations)
+        )
         selected_relations = [] if selected_relations == [""] else selected_relations
     else:
         selected_relations = []

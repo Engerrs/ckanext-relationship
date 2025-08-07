@@ -213,6 +213,7 @@ reportUnnecessaryTypeIgnoreComment = true
 reportMatchNotExhaustive = true
 reportExplicitAny = false
 reportAny = false
+reportUnusedParameter = "hint"
 
 [tool.coverage.run]
 branch = true

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Any, cast
 import ckan.plugins.toolkit as tk
 from ckan.logic import NotFound
 
@@ -13,9 +14,10 @@ def get_relations_info(pkg_type: str) -> list[tuple[str, str, str]]:
     Returns:
         List of tuples of related entities: entity, entity_type, relation_type.
     """
-    schema = sch.scheming_get_schema("dataset", pkg_type)
+    schema = cast("dict[str, Any] | None", sch.scheming_get_schema("dataset", pkg_type))
     if not schema:
         return []
+
     return [
         (
             field["related_entity"],
@@ -37,7 +39,7 @@ def get_relation_field(
     with specified entity (object_entity, object_entity_type) and type of relation
     (relation_type).
     """
-    schema = sch.scheming_get_schema("dataset", pkg_type)
+    schema = cast("dict[str, Any] | None", sch.scheming_get_schema("dataset", pkg_type))
     if not schema:
         return {}
     for field in schema["dataset_fields"]:
@@ -50,7 +52,7 @@ def get_relation_field(
     return {}
 
 
-def entity_name_by_id(entity_id: str) -> str:
+def entity_name_by_id(entity_id: str) -> str | None:
     """Retrieves the name of an entity given its ID.
     The entity can be a package, organization, or group.
     """

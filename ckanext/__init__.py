@@ -2,7 +2,7 @@
 try:
     import pkg_resources
 
-    pkg_resources.declare_namespace(__name__)
+    pkg_resources.declare_namespace(__name__)  # pyright: ignore[reportAttributeAccessIssue]
 except ImportError:
     import pkgutil
 

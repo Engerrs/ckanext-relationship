@@ -4,7 +4,7 @@ from typing import Any
 
 from flask import jsonify
 from flask.wrappers import Response
-from sqlalchemy import or_
+import sqlalchemy as sa
 
 import ckan.plugins.toolkit as tk
 from ckan import authz, logic
@@ -35,7 +35,7 @@ def get_actions():
 @validate(schema.relation_create)
 def relationship_relation_create(
     context: Context, data_dict: dict[str, Any]
-) -> list[dict[str, str]]:
+) -> list[dict[str, Any]]:
     """Create relation with specified type (relation_type) between two entities
     specified by ids (subject_id, object_id). Also create reverse relation.
     """
@@ -43,7 +43,7 @@ def relationship_relation_create(
 
     subject_id = data_dict["subject_id"]
     object_id = data_dict["object_id"]
-    relation_type = data_dict.get("relation_type")
+    relation_type = data_dict["relation_type"]
     extras = data_dict.get("extras", {})
 
     if Relationship.by_object_id(subject_id, object_id, relation_type):
@@ -89,11 +89,11 @@ def relationship_relation_delete(
         context["session"]
         .query(Relationship)
         .filter(
-            or_(
+            sa.or_(
                 Relationship.subject_id == subject_id,
                 Relationship.subject_id == subject_name,
             ),
-            or_(
+            sa.or_(
                 Relationship.object_id == object_id,
                 Relationship.object_id == object_name,
             ),
@@ -109,11 +109,11 @@ def relationship_relation_delete(
         context["session"]
         .query(Relationship)
         .filter(
-            or_(
+            sa.or_(
                 Relationship.subject_id == object_id,
                 Relationship.subject_id == object_name,
             ),
-            or_(
+            sa.or_(
                 Relationship.object_id == subject_id,
                 Relationship.object_id == subject_name,
             ),
@@ -202,7 +202,7 @@ def relationship_get_entity_list(
 
 @validate(schema.autocomplete)
 def relationship_autocomplete(context: Context, data_dict: dict[str, Any]) -> Response:
-    fq = f'type:{data_dict["entity_type"]} -id:{data_dict["current_entity_id"]}'
+    fq = f"type:{data_dict['entity_type']} -id:{data_dict['current_entity_id']}"
 
     if data_dict.get("owned_only") and not (
         authz.is_sysadmin(tk.current_user.id) and not data_dict.get("check_sysadmin")
@@ -228,9 +228,9 @@ def relationship_autocomplete(context: Context, data_dict: dict[str, Any]) -> Re
             if tk.h.check_access("package_update", {"id": pkg["id"]})
         ]
 
-    format_autocomplete_helper = getattr(
+    format_autocomplete_helper: Any = getattr(
         tk.h,
-        data_dict.get("format_autocomplete_helper"),
+        data_dict.get("format_autocomplete_helper", "relationship_format_autocomplete"),
         tk.h.relationship_format_autocomplete,
     )
 

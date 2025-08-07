@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import contextlib
-from typing import Any
+from typing import Any, cast
 
 import ckan.plugins.toolkit as tk
 from ckan import plugins as p
@@ -86,7 +86,9 @@ class RelationshipPlugin(p.SingletonPlugin):
     def before_dataset_index(self, pkg_dict: dict[str, Any]):
         pkg_id = pkg_dict["id"]
         pkg_type = pkg_dict["type"]
-        schema = sch.scheming_get_schema("dataset", pkg_type)
+        schema = cast(
+            "dict[str, Any] | None", sch.scheming_get_schema("dataset", pkg_type)
+        )
         if not schema:
             return pkg_dict
         relations_info = utils.get_relations_info(pkg_type)
@@ -113,7 +115,7 @@ class RelationshipPlugin(p.SingletonPlugin):
                 related_entity_type,
                 relation_type,
             )
-            pkg_dict[f'vocab_{field["field_name"]}'] = relations_ids
+            pkg_dict[f"vocab_{field['field_name']}"] = relations_ids
 
             pkg_dict.pop(field["field_name"], None)
 
